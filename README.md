@@ -1,62 +1,56 @@
 # 🏥 Sistema Hospitalario (Fullstack Dockerizado)
 
-Este proyecto cuenta con una arquitectura fullstack totalmente contenedorizada utilizando **Docker** y **Docker Compose**. Combina un backend en **FastAPI (Python)** y un frontend moderno en **Angular**.
+Este proyecto consiste en un sistema hospitalario desarrollado con una arquitectura **Full Stack** utilizando **FastAPI** para el backend y **Angular** para el frontend. Todo el entorno se encuentra contenedorizado mediante **Docker** y **Docker Compose**, lo que permite ejecutar la aplicación de forma sencilla y consistente en cualquier equipo.
 
 ---
 
-## 🚀 Tecnologías y Herramientas
+# 🚀 Tecnologías Utilizadas
 
 - **Backend:** Python 3.10 + FastAPI + Uvicorn
 - **Frontend:** Angular + Node.js 22 (Alpine)
-- **Orquestación:** Docker & Docker Compose
-- **Pruebas de API:** Thunder Client / Swagger UI
+- **Contenedores:** Docker & Docker Compose
+- **Documentación de API:** Swagger UI
+- **Pruebas de API:** Thunder Client
 
 ---
 
-## 🛠️ Historia del Proyecto y Problemas Resueltos
+# 📁 Estructura del Proyecto
 
-Durante el proceso de configuración y despliegue del entorno con Docker, se solucionaron los siguientes desafíos técnicos:
-
-### 1. Incompatibilidad de Node.js con Angular
-
-**Problema:** El frontend fallaba o mostraba advertencias de `Unsupported engine` al intentar instalar dependencias sobre una imagen base `node:18-alpine`.
-
-**Solución:** Se actualizó el `Dockerfile` del frontend a `node:22-alpine` para cumplir con los requisitos de la versión de Angular utilizada.
-
-### 2. Exposición del Servidor de Desarrollo de Angular
-
-**Problema:** El frontend no respondía fuera del contenedor al ejecutar `ng serve`.
-
-**Solución:** Se configuró el comando de arranque con la opción `--host 0.0.0.0`.
-
-```dockerfile
-CMD ["npm", "start", "--", "--host", "0.0.0.0"]
+```text
+hospital_backend/
+│
+├── hospital-frontend/        # Aplicación Angular
+│   ├── src/
+│   ├── public/
+│   ├── Dockerfile
+│   ├── package.json
+│   └── README.md
+│
+├── Dockerfile                # Backend FastAPI
+├── docker-compose.yml        # Orquestación de contenedores
+├── main.py
+├── requirements.txt
+└── README.md
 ```
-
-Esto permite que las peticiones desde el host lleguen correctamente al contenedor.
-
-### 3. Optimización de Docker Compose
-
-**Problema:** Advertencias relacionadas con el atributo obsoleto `version` en `docker-compose.yml`.
-
-**Solución:** Se eliminó dicho atributo para adaptarse a la especificación moderna de Docker Compose.
 
 ---
 
 # 📋 Requisitos Previos
 
-Antes de ejecutar el proyecto, asegúrate de tener instalado Docker según tu sistema operativo.
+Antes de ejecutar el proyecto debes tener instalado Docker.
 
 ## 🪟 Windows
 
-- Tener instalado **Docker Desktop**.
-- Se recomienda habilitar **WSL2**.
-- Verificar que Docker Desktop esté iniciado.
+- Docker Desktop
+- Se recomienda habilitar **WSL2**
+- Verificar que Docker Desktop esté en ejecución
 
-## 🐧 Linux (Ubuntu, Debian, Fedora, etc.)
+## 🐧 Linux
 
-- Tener instalados **Docker Engine** y **Docker Compose**.
-- *(Opcional)* Agregar el usuario al grupo `docker` para evitar usar `sudo`:
+- Docker Engine
+- Docker Compose
+
+Opcionalmente puedes agregar tu usuario al grupo `docker` para evitar utilizar `sudo`:
 
 ```bash
 sudo usermod -aG docker $USER
@@ -66,29 +60,33 @@ sudo usermod -aG docker $USER
 
 ---
 
-# ⚙️ Cómo Ejecutar la Aplicación
+# ⚙️ Ejecución del Proyecto
 
-Ubícate en la carpeta raíz del proyecto, donde se encuentra el archivo `docker-compose.yml`.
+Ubícate en la carpeta raíz del proyecto (donde se encuentra el archivo `docker-compose.yml`).
 
-## 1. Construir y levantar los contenedores
+## Primera ejecución
+
+Construye las imágenes e inicia los contenedores:
 
 ```bash
 docker compose up --build
 ```
 
-## 2. Ejecutar en segundo plano (Detached Mode)
+## Ejecuciones posteriores
+
+Si no realizaste cambios en los Dockerfiles o dependencias, simplemente ejecuta:
 
 ```bash
-docker compose up -d --build
+docker compose up
 ```
 
-## 3. Detener los contenedores
+## Ejecutar en segundo plano
 
-Si ejecutaste el proyecto en modo interactivo:
+```bash
+docker compose up -d
+```
 
-- Presiona **Ctrl + C**.
-
-Si lo ejecutaste en segundo plano:
+## Detener la aplicación
 
 ```bash
 docker compose down
@@ -96,42 +94,114 @@ docker compose down
 
 ---
 
-# 🌐 Puertos y Enlaces de Acceso
+# 🌐 Acceso a la Aplicación
 
-Una vez iniciados los servicios, estarán disponibles en las siguientes direcciones:
+Una vez que ambos contenedores estén ejecutándose, podrás acceder a los siguientes servicios:
 
-| Servicio | URL | Descripción |
-|----------|-----|-------------|
-| Frontend | http://localhost:4200 | Aplicación Angular |
-| Backend API | http://localhost:8000 | API REST con FastAPI |
-| Swagger UI | http://localhost:8000/docs | Documentación interactiva |
+| Servicio | Dirección |
+|-----------|-----------|
+| Frontend (Angular) | http://localhost:4200 |
+| Backend (FastAPI) | http://localhost:8000 |
+| Documentación Swagger | http://localhost:8000/docs |
 
 ---
 
-# 🧪 Pruebas de Endpoints con Thunder Client
+# 🧪 Pruebas de la API
 
-1. Instala la extensión **Thunder Client** en Visual Studio Code.
-2. Crea una **New Request**.
-3. Ingresa la URL del endpoint, por ejemplo:
+La API puede probarse mediante **Thunder Client** o directamente desde **Swagger UI**.
+
+### Thunder Client
+
+1. Instalar la extensión en Visual Studio Code.
+2. Crear una nueva petición.
+3. Escribir la URL del endpoint.
+
+Ejemplo:
 
 ```text
 http://localhost:8000/
 ```
 
-4. Selecciona el método HTTP correspondiente (`GET`, `POST`, `PUT` o `DELETE`).
-5. Haz clic en **Send**.
+4. Seleccionar el método HTTP correspondiente (`GET`, `POST`, `PUT` o `DELETE`).
+5. Presionar **Send**.
+
+---
+
+# 🛠️ Problemas Comunes
+
+### Docker reutiliza imágenes antiguas
+
+Si realizaste cambios importantes en dependencias o Dockerfiles, reconstruye completamente el proyecto:
+
+```bash
+docker compose down --volumes --remove-orphans
+docker compose build --no-cache
+docker compose up
+```
+
+---
+
+### Error `Unsupported engine`
+
+Verifica que el frontend utilice una imagen compatible con Angular:
+
+```dockerfile
+FROM node:22-alpine
+```
+
+---
+
+### Angular no responde desde el navegador
+
+Comprueba que el Dockerfile del frontend ejecute Angular con:
+
+```dockerfile
+CMD ["npm", "start", "--", "--host", "0.0.0.0"]
+```
+
+Esto permite que el servidor sea accesible desde fuera del contenedor.
 
 ---
 
 # 🧹 Comandos Útiles
 
 ```bash
-# Detener y eliminar contenedores junto con sus redes
+# Iniciar servicios
+docker compose up
+
+# Iniciar reconstruyendo imágenes
+docker compose up --build
+
+# Ejecutar en segundo plano
+docker compose up -d
+
+# Detener servicios
 docker compose down
+
+# Pausar contenedores
+docker compose stop
+
+# Reanudar contenedores
+docker compose start
+
+# Reiniciar contenedores
+docker compose restart
 
 # Ver el estado de los contenedores
 docker compose ps
 
-# Ver los logs en tiempo real
+# Ver los registros en tiempo real
 docker compose logs -f
 ```
+
+---
+
+# 📝 Notas Técnicas
+
+Durante el desarrollo del proyecto se realizaron las siguientes configuraciones para garantizar el correcto funcionamiento del entorno Docker:
+
+- Se actualizó el frontend para utilizar **Node.js 22**, compatible con la versión de Angular empleada.
+- Se configuró Angular para escuchar en la dirección `0.0.0.0`, permitiendo el acceso desde el host.
+- Se eliminó el atributo `version` del archivo `docker-compose.yml`, adaptándolo a la especificación moderna de Docker Compose.
+
+Estas configuraciones permiten que el proyecto pueda ejecutarse correctamente tanto en Windows como en Linux.
