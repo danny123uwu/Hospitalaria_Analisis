@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
@@ -138,7 +138,7 @@ def verificar_token(credentials: HTTPAuthorizationCredentials = Depends(security
 
 # ---------- ENDPOINTS PÚBLICOS ----------
 @app.post("/login")
-def login(username: str, password: str):
+def login(username: str = Form(...), password: str = Form(...)):
     # Simulación: solo admin/admin123
     if username == "admin" and password == "admin123":
         token = crear_token(username)
